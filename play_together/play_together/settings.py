@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'auth_',
     'events',
-    'organization'
+    'organizations'
 ]
 
 MIDDLEWARE = [
@@ -122,7 +122,7 @@ MEDIA_ROOT = BASE_DIR / 'media/'
 
 # Custom user model
 AUTH_USER_MODEL = 'auth_.MainUser'
-ORGANIZATION_MODEL = 'organization.Organization'
+ORGANIZATION_MODEL = 'organizations.Organization'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
