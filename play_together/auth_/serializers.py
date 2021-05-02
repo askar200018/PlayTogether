@@ -1,6 +1,5 @@
 from django.core.validators import EmailValidator
 from django_countries.serializer_fields import CountryField
-from django_countries.serializers import CountryFieldMixin
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -12,12 +11,12 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True,
                                    validators=[UniqueValidator(queryset=MainUser.objects.all()), EmailValidator, ])
     password = serializers.CharField(min_length=4, write_only=True)
-    gender = serializers.ChoiceField(choices=GENDER_CHOICES, source='get_gender_display')
-    nationality = CountryField(name_only=True)
+    # gender = serializers.ChoiceField(choices=GENDER_CHOICES, source='get_gender_display')
+    # nationality = CountryField(name_only=True)
 
     class Meta:
         model = MainUser
-        fields = ('email', 'password', 'nationality', 'gender')
+        fields = ('email', 'password')
         extra_kwargs = {'password': {'write_only': True}, }
 
     def create(self, validated_data):

@@ -25,6 +25,8 @@ class Event(models.Model):
 class Category(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True, related_name='categories')
     name = models.CharField(_('Category name'), max_length=255)
+    min_age = models.PositiveSmallIntegerField(_('Minimal age'), default=0)
+    max_age = models.PositiveSmallIntegerField(_('Maximal age'), default=66)
     is_feature = models.BooleanField(default=False)
 
     class Meta:
