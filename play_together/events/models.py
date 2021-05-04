@@ -5,7 +5,7 @@ from utils.constants import CITIES, CITY_ALMATY
 
 
 class Event(models.Model):
-    organizer = models.ForeignKey(settings.ORGANIZATION_MODEL, on_delete=models.SET_NULL, null=True)
+    organization = models.ForeignKey(settings.ORGANIZATION_MODEL, on_delete=models.SET_NULL, null=True)
     name = models.CharField(_('Event name'), max_length=255)
     description = models.TextField()
     start_date = models.DateTimeField()

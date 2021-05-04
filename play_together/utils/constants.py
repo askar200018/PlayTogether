@@ -9,5 +9,5 @@ CITY_ALMATY = 'ALA'
 CITY_ASTANA = 'AST'
 CITIES = (
     (CITY_ALMATY, 'Almaty'),
-    (CITY_ASTANA, 'Astana')
+    (CITY_ASTANA, 'Astana'),
 )

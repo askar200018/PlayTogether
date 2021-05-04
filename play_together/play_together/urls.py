@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/', include('auth_.urls')),
     path('api/', include('organizations.urls')),
+    path('api/', include('events.urls')),
 ]
 
 if settings.DEBUG:
