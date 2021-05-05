@@ -27,3 +27,5 @@ class OrganizationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializerDetail
     permission_classes = (IsOwnerOrIsAuthenticated,)
+
+
