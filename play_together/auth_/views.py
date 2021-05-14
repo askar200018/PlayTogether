@@ -10,6 +10,9 @@ from rest_framework import mixins
 from rest_framework import generics
 from .serializers import RegisterUserSerializer
 from .models import MainUser
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class UserCreate(generics.CreateAPIView):
@@ -35,4 +38,5 @@ def user_list(request):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        logger.error(f'User object serializer is not valid, ID: {serializer.instance}')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

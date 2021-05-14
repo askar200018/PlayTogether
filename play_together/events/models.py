@@ -2,6 +2,15 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from utils.constants import CITIES, CITY_ALMATY
+import datetime
+
+
+class EventQuerySet(models.QuerySet):
+    def active_events(self):
+        return self.filter(end_date__gte=datetime.datetime.now())
+
+    def past_events(self):
+        return self.filter(end_date__lt=datetime.datetime.now())
 
 
 class Event(models.Model):
@@ -14,12 +23,19 @@ class Event(models.Model):
     address = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
 
+    objects = EventQuerySet.as_manager()
+
     class Meta:
         verbose_name = (_('Event'))
         verbose_name_plural = (_('Events'))
 
     def __str__(self):
         return self.name
+
+
+class CategoryQuerySet(models.QuerySet):
+    def feature_categories(self):
+        return self.filter(is_feature=True)
 
 
 class Category(models.Model):

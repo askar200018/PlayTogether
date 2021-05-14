@@ -4,7 +4,15 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from utils.constants import GENDER_CHOICES
-from .models import MainUser
+from .models import MainUser, Profile
+
+
+class ProfileSerializer(serializers.Serializer):
+    location = serializers.CharField()
+    hometown = serializers.CharField()
+
+    def create(self, validated_data):
+        return Profile.objects.create(**validated_data)
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
