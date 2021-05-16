@@ -9,34 +9,28 @@ def max_players_count(players_ids):
     return players_ids
 
 
-def age_restriction(value):
-    if 9 > value > 66:
-        raise serializers.ValidationError("You are no eligible for being player")
-    return value;
-
-
 class CategorySerializer(serializers.ModelSerializer):
     def validate(self, data):
         """
-        Check that the start is before the stop.
+        Check that the max_age greater than min_age
         """
-        if data['max_age'] > data['min_age']:
+        if data['max_age'] < data['min_age']:
             raise serializers.ValidationError("Max age must be greater than min age")
         return data
 
     class Meta:
         model = Category
-        exclude = ('event',)
+        fields = '__all__'
 
 
 class CourtSerializer(serializers.ModelSerializer):
     class Meta:
         model = Court
-        exclude = ('event',)
+        fields = '__all__'
 
 
 class EventBaseSerializer(serializers.ModelSerializer):
-    # categories = CategorySerializer(many=True, read_only=True)
+    categories = CategorySerializer(many=True, read_only=True)
     courts = CourtSerializer(many=True, read_only=True)
 
     def validate(self, data):
@@ -76,8 +70,8 @@ class ResultSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class GameSerializer(serializers.ModelSerializer):
-    result = ResultSerializer(many=True, read_only=True)
+class GameDetailSerializer(serializers.ModelSerializer):
+    result = ResultSerializer(read_only=True)
     date = serializers.DateTimeField(format="%Y-%m-%d %H:%M", required=False, read_only=True)
 
     class Meta:
@@ -85,10 +79,16 @@ class GameSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TeamSerializer(serializers.ModelSerializer):
+class GameSerializer(serializers.ModelSerializer):
+    date = serializers.DateTimeField(format="%Y-%m-%d %H:%M", required=False)
+
+    class Meta:
+        model = Game
+        fields = '__all__'
+
+
+class TeamDetailSerializer(serializers.ModelSerializer):
     players = PlayerSerializer(many=True, read_only=True)
-    players_ids = serializers.ListField(child=serializers.IntegerField(), write_only=True,
-                                        validators=[max_players_count])
     team_a_games = GameSerializer(many=True, read_only=True)
     team_b_games = GameSerializer(many=True, read_only=True)
 
@@ -103,3 +103,9 @@ class TeamSerializer(serializers.ModelSerializer):
         for player in players_validated_data:
             team.players.add(player)
         return team
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = '__all__'

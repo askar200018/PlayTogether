@@ -67,7 +67,7 @@ class Court(models.Model):
 
 class Team(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='teams')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='teams')
     players = models.ManyToManyField(settings.AUTH_USER_MODEL)
     name = models.CharField(_('Team name'), max_length=255)
 
@@ -93,6 +93,6 @@ class Game(models.Model):
 
 
 class Result(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='result')
+    game = models.OneToOneField(Game, on_delete=models.CASCADE, related_name='result')
     score_a = models.IntegerField(null=True, default=None)
     score_b = models.IntegerField(null=True, default=None)
