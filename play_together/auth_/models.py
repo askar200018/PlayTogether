@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
@@ -10,33 +12,12 @@ from utils.constants import GENDER_CHOICES
 
 class MainUserManager(BaseUserManager):
 
-    # def _create_user(self, email, password, **extra_fields):
-    #     """
-    #     Creates and saves a User with the given email and password.
-    #     """
-    #     if not email:
-    #         raise ValueError('The given email must be set')
-    #     email = self.normalize_email(email)
-    #     user = self.model(email=email, **extra_fields)
-    #     user.set_password(password)
-    #     user.save(using=self._db)
-    #     return user
-
     def create_superuser(self, email, password=None, **extra_fields):
         """
                 Creates and saves a superuser with the given email, date of
                 birth and password.
         """
         user = self.create_user(email, password=password, **extra_fields)
-        # extra_fields.setdefault('is_staff', True)
-        # extra_fields.setdefault('is_superuser', True)
-        # extra_fields.setdefault('is_active', True)
-        #
-        # if extra_fields.get('is_staff') is not True:
-        #     raise ValueError(
-        #         'Superuser must be assigned to is_staff=True.')
-        # if extra_fields.get('is_superuser') is not True:
-        #     raise ValueError('Superuser must have is_superuser=True.')
         user.is_admin = True
         user.save(using=self.db)
         return user
@@ -107,3 +88,20 @@ class MainUser(AbstractBaseUser, PermissionsMixin):
         """Is the user a member of staff?"""
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(MainUser, on_delete=models.CASCADE)
+    location = models.CharField(max_length=255, blank=True)
+    hometown = models.CharField(max_length=255, blank=True)
+
+
+@receiver(post_save, sender=MainUser)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=MainUser)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()

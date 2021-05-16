@@ -5,6 +5,9 @@ from rest_framework.metadata import SimpleMetadata
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class OrganizationList(generics.ListCreateAPIView):

@@ -2,17 +2,28 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from utils.constants import CITIES, CITY_ALMATY
+import datetime
+
+
+class EventQuerySet(models.QuerySet):
+    def active_events(self):
+        return self.filter(end_date__gte=datetime.datetime.now())
+
+    def past_events(self):
+        return self.filter(end_date__lt=datetime.datetime.now())
 
 
 class Event(models.Model):
     organization = models.ForeignKey(settings.ORGANIZATION_MODEL, on_delete=models.SET_NULL, null=True)
     name = models.CharField(_('Event name'), max_length=255)
     description = models.TextField()
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateField()
+    end_date = models.DateField()
     location = models.CharField(max_length=5, choices=CITIES, default=CITY_ALMATY)
     address = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
+
+    objects = EventQuerySet.as_manager()
 
     class Meta:
         verbose_name = (_('Event'))
@@ -20,6 +31,11 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class CategoryQuerySet(models.QuerySet):
+    def feature_categories(self):
+        return self.filter(is_feature=True)
 
 
 class Category(models.Model):
@@ -51,7 +67,7 @@ class Court(models.Model):
 
 class Team(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='teams')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='teams')
     players = models.ManyToManyField(settings.AUTH_USER_MODEL)
     name = models.CharField(_('Team name'), max_length=255)
 
@@ -77,6 +93,6 @@ class Game(models.Model):
 
 
 class Result(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='result')
+    game = models.OneToOneField(Game, on_delete=models.CASCADE, related_name='result')
     score_a = models.IntegerField(null=True, default=None)
     score_b = models.IntegerField(null=True, default=None)

@@ -4,11 +4,19 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
-from .models import MainUser
+from .models import MainUser, Profile
 
 
 # Register your models here.
 # admin.site.register(MainUser)
+
+
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    can_delete = False
+    verbose_name_plural = 'Profile'
+    fk_name = 'user'
+
 
 class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
@@ -16,6 +24,7 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
+    inlines = (ProfileInline,)
     list_display = ('email', 'is_admin')
     list_filter = ('is_admin',)
     fieldsets = (
@@ -34,6 +43,11 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ()
+
+    def get_inline_instances(self, request, obj=None):
+        if not obj:
+            return list()
+        return super(UserAdmin, self).get_inline_instances(request, obj)
 
 
 # Now register the new UserAdmin...

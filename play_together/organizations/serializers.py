@@ -30,8 +30,6 @@ class OrganizationSerializerList(OrganizationBaseSerializer):
         return super().create(validated_data)
 
 
-
-
 class OrganizationSerializerDetail(OrganizationBaseSerializer):
     owner = MainUserSerializer(read_only=True)
 
